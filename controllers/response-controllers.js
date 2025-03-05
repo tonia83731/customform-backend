@@ -36,7 +36,7 @@ const responseControllers = {
       if (!form)
         return res.stats(404).json({
           success: false,
-          message: "Form no found",
+          message: "Form not found",
         });
 
       if (!form.isPublished)

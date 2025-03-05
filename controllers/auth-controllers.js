@@ -9,25 +9,25 @@ const authControllers = {
       const { name, email, password } = req.body;
 
       if (!name || !email || !password)
-        return res.status(401).json({
+        return res.status(400).json({
           success: false,
           message: "Name, email, password is required",
         });
 
       if (name.length < 4 || name.length > 20)
-        return res.status(401).json({
+        return res.status(400).json({
           success: false,
           message: "Name should between 4-20 letters",
         });
 
       if (!validator.isEmail(email))
-        return res.status(401).json({
+        return res.status(400).json({
           success: false,
           message: "Invalid email",
         });
 
       if (password.length < 4)
-        return res.status(401).json({
+        return res.status(400).json({
           success: false,
           message: "Password length should over 4 letters",
         });

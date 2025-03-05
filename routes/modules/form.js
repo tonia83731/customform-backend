@@ -7,6 +7,7 @@ router.delete(
   formControllers.deleteQuestion
 );
 router.get("/:formId/get-form", formControllers.getForm);
+router.get("/:formId/get-preview-form", formControllers.getPreviewForm);
 router.get("/:formId/get-form-questions", formControllers.getFormQuestions);
 router.put(
   "/:formId/:sectionId/updated-section",

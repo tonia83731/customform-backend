@@ -62,6 +62,39 @@ const formControllers = {
       console.log(error);
     }
   },
+  getPreviewForm: async (req, res) => {
+    try {
+      const { formId } = req.params;
+      const [form, questions] = await Promise.all([
+        Form.findById(formId),
+        Question.find({
+          formId,
+        }).sort({ order: 1 }),
+      ]);
+
+      if (!form)
+        return res.stats(404).json({
+          success: false,
+          message: "Form not found",
+        });
+
+      if (!form.isPublished)
+        return res.status(401).json({
+          success: false,
+          message: "Form is not published",
+        });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          form,
+          questions,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
   getFormQuestions: async (req, res) => {
     try {
       const { formId } = req.params;
@@ -129,7 +162,6 @@ const formControllers = {
 
       return res.status(200).json({
         success: true,
-        message: "Form updated successfully",
         data: updatedForm,
       });
     } catch (error) {
@@ -210,7 +242,7 @@ const formControllers = {
       if (!form)
         return res.status(404).json({
           success: false,
-          message: "Form no found",
+          message: "Form not found",
         });
 
       if (form.hasSections)
@@ -431,7 +463,7 @@ const formControllers = {
       if (!question)
         return res.stats(404).json({
           success: false,
-          message: "Question no found",
+          message: "Question not found",
         });
 
       const sectionId = question.sectionId;
