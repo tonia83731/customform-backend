@@ -78,12 +78,6 @@ const formControllers = {
           message: "Form not found",
         });
 
-      if (!form.isPublished)
-        return res.status(401).json({
-          success: false,
-          message: "Form is not published",
-        });
-
       return res.status(200).json({
         success: true,
         data: {
