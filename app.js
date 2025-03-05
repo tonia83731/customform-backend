@@ -16,7 +16,7 @@ const mongoose_url = process.env.MONGODB_URL;
 
 const allowedOrigins = [
   "http://localhost:5173", // Development
-  // "https://your-production-frontend.com", // Production
+  "https://customform-frontend.vercel.app", // Production
 ];
 
 const corsOptions = {
