@@ -331,7 +331,7 @@ const formControllers = {
         (a, b) => a.order - b.order
       );
 
-      return res.status(200).json({
+      return res.status(201).json({
         success: true,
         data: updated_sections,
       });
