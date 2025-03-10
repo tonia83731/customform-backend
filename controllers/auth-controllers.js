@@ -89,6 +89,30 @@ const authControllers = {
       console.log(error);
     }
   },
+  checkedAuthentication: async (req, res) => {
+    try {
+      const { _id } = req.user;
+
+      const user = await Auth.findOne(_id);
+
+      if (!user)
+        return res.status(200).json({
+          success: true,
+          data: {
+            is_auth: false,
+          },
+        });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          is_auth: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 module.exports = authControllers;
