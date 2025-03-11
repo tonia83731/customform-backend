@@ -53,3 +53,17 @@ The project is the backend API for custom forms, users are allowed to implement 
   - Allowed user to set form visibility duration, e.g. the form is visible for 3 days and will automatically close afterward
 - Data-driven Form Content: Visualize and output the data based on user responses
 - Auto Save Form: Enable auto-saving so users can continue filling out the form from where they left off upon returning
+
+## Project Setup
+
+```sh
+git clone https://github.com/tonia83731/customform-backend.git
+```
+
+```sh
+npm install
+```
+
+```sh
+npm run dev
+```
