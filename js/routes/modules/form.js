@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const formControllers = require("../../controllers/form-controllers");
+const formControllers = require("../../../controllers/form-controllers");
 
 router.delete(
   "/:formId/:questionId/delete-question",
@@ -33,4 +33,5 @@ router.put("/:questionId/edit-question", formControllers.updatedQuestion); // V
 
 router.post("/create-form", formControllers.createForm);
 router.get("/", formControllers.getForms);
+
 module.exports = router;

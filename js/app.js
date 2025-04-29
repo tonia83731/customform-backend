@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const passport = require("./config/passport");
+const passport = require("../../config/passport");
 
 const app = express();
 
@@ -16,7 +16,7 @@ const mongoose_url = process.env.MONGODB_URL;
 
 const allowedOrigins = [
   "http://localhost:5173", // Development
-  "https://customform-frontend.vercel.app", // Production
+  // "https://customform-frontend.vercel.app", // Production
 ];
 
 const corsOptions = {

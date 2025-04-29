@@ -1,10 +1,11 @@
-const Form = require("../models/form-models");
-const Question = require("../models/question-models");
-const Response = require("../models/response-models");
+import { Request, Response as ExpressResponse } from "express";
+import Form from "../models/form-models";
+import Question from "../models/question-models";
+import Response from "../models/question-models";
 const { v4: uuidv4 } = require("uuid");
 
 const responseControllers = {
-  checkPublishedAuth: async (req, res) => {
+  checkPublishedAuth: async (req: Request, res: ExpressResponse) => {
     try {
       const { formId } = req.params;
       const form = await Form.findById(formId);
@@ -23,7 +24,7 @@ const responseControllers = {
       console.log(error);
     }
   },
-  getForm: async (req, res) => {
+  getForm: async (req: Request, res: ExpressResponse) => {
     try {
       const { formId } = req.params;
       const [form, questions] = await Promise.all([
@@ -34,7 +35,7 @@ const responseControllers = {
       ]);
 
       if (!form)
-        return res.stats(404).json({
+        return res.status(404).json({
           success: false,
           message: "Form not found",
         });
@@ -56,7 +57,7 @@ const responseControllers = {
       console.log(error);
     }
   },
-  getFormQuestions: async (req, res) => {
+  getFormQuestions: async (req: Request, res: ExpressResponse) => {
     try {
       const { formId } = req.params;
       const { sectionId } = req.query;
@@ -76,7 +77,7 @@ const responseControllers = {
       console.log(error);
     }
   },
-  submitResponse: async (req, res) => {
+  submitResponse: async (req: Request, res: ExpressResponse) => {
     try {
       const { responses } = req.body; // [{formId, questionId, response}]
 
@@ -88,10 +89,12 @@ const responseControllers = {
 
       let random_uuid = uuidv4();
 
-      const submit_responses = responses.map((item) => ({
-        ...item,
-        respondentId: random_uuid,
-      }));
+      const submit_responses = responses.map(
+        (item: { formId: string; questionId: string; response: any }) => ({
+          ...item,
+          respondentId: random_uuid,
+        })
+      );
 
       await Response.insertMany(submit_responses);
 
