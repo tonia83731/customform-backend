@@ -1,7 +1,6 @@
 import { Request, Response as ExpressResponse, NextFunction } from "express";
-import { Types } from "mongoose";
-import Form, { IForm } from "../models/form-models";
-import Question, { QuestionType } from "../models/question-models";
+import Form from "../models/form-models";
+import Question from "../models/question-models";
 
 const questionControllers = {
   getFormWithQuestion: async (

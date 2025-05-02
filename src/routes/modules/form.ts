@@ -10,7 +10,9 @@ router.patch(
   "/:formId/remove-all-sections",
   formControllers.formRemoveAllSections
 );
-// router.patch("/:formId/adjust-published", formControllers.publishedForm);
+router.post("/:formId/published", formControllers.publishedForm);
+router.delete("/:formId/unpublished", formControllers.unpublishedForm);
+router.delete("/:formId/delete", formControllers.deletedForm);
 router.post("/", formControllers.createForm);
 
 export default router;
