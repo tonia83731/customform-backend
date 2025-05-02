@@ -1,10 +1,16 @@
 import express from "express";
 const router = express.Router();
-const responseControllers = require("../../../controllers/response-controllers");
+import responseControllers from "../../controllers/response-controllers";
 
-router.get("/:formId/form", responseControllers.getForm);
-router.get("/:formId/questions", responseControllers.getFormQuestions);
-router.get("/:formId/validation", responseControllers.checkPublishedAuth);
-router.post("/submit-form", responseControllers.submitResponse);
+router.get(
+  "/:formId/:questionId/add-answer",
+  responseControllers.createResponse
+);
+router.get(
+  "/:formId/form-with-question-and-response",
+  responseControllers.getQuestionWithResponse
+);
+router.get("/:answerId/update-answer", responseControllers.updatedResponse);
+router.post("/:answerId/clear-answer", responseControllers.clearResponse);
 
 export default router;

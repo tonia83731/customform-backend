@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 interface IResponse extends Document {
   form_id: mongoose.Types.ObjectId;
   question_id: mongoose.Types.ObjectId;
-  response: any;
+  answer: any;
   respondent_id: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -22,7 +22,7 @@ const responseSchema: MongooseSchema<IResponse> = new Schema(
       ref: "Question",
       required: true,
     },
-    response: {
+    answer: {
       type: Schema.Types.Mixed,
     },
     respondent_id: {
