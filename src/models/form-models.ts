@@ -1,18 +1,14 @@
 import mongoose, { Schema as MongooseSchema, Document, Model } from "mongoose";
 const Schema = mongoose.Schema;
 
-interface ISection {
-  _id?: mongoose.Types.ObjectId;
-  order: number;
-  title: string;
-  description: string;
-}
-
-interface IForm extends Document {
+import { sectionSchema, ISection } from "./form-section-models";
+import questionModel from "./question-models";
+export interface IForm extends Document {
   title: string;
   description?: string;
-  has_section: boolean;
-  section_count: number;
+  // has_section: boolean;
+  // section_count: number;
+  sections: ISection[];
   question_count: number;
   thank_msg: string;
   max_response: number | null;
@@ -31,14 +27,7 @@ const formSchema: MongooseSchema<IForm> = new Schema(
       type: String,
       maxlength: 300,
     },
-    has_section: {
-      type: Boolean,
-      default: false,
-    },
-    section_count: {
-      type: Number,
-      default: 0,
-    },
+    sections: [sectionSchema],
     question_count: {
       type: Number,
       default: 0,
@@ -67,6 +56,27 @@ const formSchema: MongooseSchema<IForm> = new Schema(
     timestamps: true,
   }
 );
+
+// formSchema.pre(
+//   "deleteOne",
+//   { document: true, query: false },
+//   async function (next) {
+//     try {
+//       // Use this._id to access the document's ID
+//       const formId = this._id;
+
+//       // Delete related sections and questions
+//       await sectionModel.deleteMany({ formId });
+//       await questionModel.deleteMany({ formId });
+
+//       next();
+//     } catch (err) {
+//       next(err);
+//     }
+//   }
+// );
+
+// You can also use the `post` hook if you want to trigger it after the deletion
 
 const formModel: Model<IForm> = mongoose.model("Form", formSchema);
 export default formModel;

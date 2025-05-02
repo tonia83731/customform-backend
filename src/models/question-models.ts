@@ -9,19 +9,20 @@ import {
 } from "./question-options";
 const Schema = mongoose.Schema;
 
+export type QuestionType =
+  | "shortAnswer" // "What is your age?"
+  | "paragraph" // "Describe your experience with our service."
+  | "singleSelect" // "What’s your favorite color?" (Red, Blue, Green)
+  | "dropdown"
+  | "checkboxes" // "Which fruits do you like?" (Apple, Banana, Mango)
+  | "linearScale" // "Rate your satisfaction: 1 (bad) to 5 (great)"
+  | "date" // "When is your birthday?"
+  | "time" // "What time is your appointment?"
+  | "singleSelectGrid" // Rate different services (Cleanliness, Speed) with options (Poor, Good, Excellent).
+  | "checkboxGrid";
 interface IQuestion extends Document {
   form_id: mongoose.Types.ObjectId;
-  question_type:
-    | "shortAnswer"
-    | "paragraph"
-    | "multiChoice"
-    | "dropdown"
-    | "checkboxes"
-    | "linearScale"
-    | "date"
-    | "time"
-    | "multiChoiceGrid"
-    | "checkboxGrid";
+  question_type: QuestionType;
   question?: string;
   description?: string;
   section_id: mongoose.Types.ObjectId | null;
@@ -29,7 +30,7 @@ interface IQuestion extends Document {
   options?: IOpt;
   scale_options?: IScaleOpt;
   datetime_options?: IDatetime;
-  word_limit?: number;
+  word_limit: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,13 +48,13 @@ const questionSchema: MongooseSchema<IQuestion> = new Schema(
       enum: [
         "shortAnswer",
         "paragraph",
-        "multiChoice",
+        "singleSelect",
         "dropdown",
         "checkboxes",
         "linearScale",
         "date",
         "time",
-        "multiChoiceGrid",
+        "singleSelectGrid",
         "checkboxGrid",
       ],
     },
@@ -67,6 +68,7 @@ const questionSchema: MongooseSchema<IQuestion> = new Schema(
     },
     section_id: {
       type: Schema.Types.ObjectId,
+      ref: "Form.sections",
       default: null,
     },
     is_required: {
@@ -78,6 +80,7 @@ const questionSchema: MongooseSchema<IQuestion> = new Schema(
     datetime_options: datetimeSchema,
     word_limit: {
       type: Number,
+      default: null,
     },
   },
   {

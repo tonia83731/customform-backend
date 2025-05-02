@@ -1,15 +1,16 @@
 import mongoose, { Schema as MongooseSchema, Document, Model } from "mongoose";
 const Schema = mongoose.Schema;
 
-interface IAuth extends Document {
+interface IUser extends Document {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-const authSchema: MongooseSchema<IAuth> = new Schema({
+const userSchema: MongooseSchema<IUser> = new Schema({
   name: {
     type: String,
     required: true,
@@ -19,13 +20,19 @@ const authSchema: MongooseSchema<IAuth> = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
-    required: true,
+    // required: true,
     minLength: 4,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
   },
 });
 
-const authModel: Model<IAuth> = mongoose.model("Auth", authSchema);
-export default authModel;
+const userModel: Model<IUser> = mongoose.model("User", userSchema);
+export default userModel;

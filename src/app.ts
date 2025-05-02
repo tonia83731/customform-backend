@@ -12,6 +12,8 @@ const app: Application = express();
 const port = process.env.PORT || 8080;
 const mongoose_url = process.env.NEW_MONGODB_URL;
 
+import router from "./routes/index";
+
 const allowedOrigins = [
   "http://localhost:5173", // Development
   // "https://customform-frontend.vercel.app", // Production
@@ -40,6 +42,8 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
+
+app.use("/api", router);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
