@@ -27,10 +27,25 @@ interface IQuestion extends Document {
   description?: string;
   section_id: mongoose.Types.ObjectId | null;
   is_required: boolean;
-  options?: IOpt;
-  scale_options?: IScaleOpt;
-  datetime_options?: IDatetime;
-  word_limit: number | null;
+  settings:
+    | { word_limit?: number | null } // For shortAnswer and paragraph
+    | { options: string[] } // For singleSelect, dropdown, checkboxes
+    | { options: string[]; max_select?: number | null; is_multi?: boolean } // For dropdown (multi)
+    | {
+        min_value: number;
+        max_value: number;
+        min_label?: string | null;
+        max_label?: string | null;
+      } // For linearScale
+    | { allowed_date_range?: boolean } // For date
+    | { allowed_time_range?: boolean } // For time
+    | { row_options: string[]; col_options: string[] } // For singleSelectGrid
+    | {
+        row_options: string[];
+        col_options: string[];
+        max_select?: number | null;
+      }; // For checkboxGrid
+  order: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -60,7 +75,7 @@ const questionSchema: MongooseSchema<IQuestion> = new Schema(
     },
     question: {
       type: String,
-      required: true,
+      // required: true,
     },
     description: {
       type: String,
@@ -75,10 +90,11 @@ const questionSchema: MongooseSchema<IQuestion> = new Schema(
       type: Boolean,
       default: false,
     },
-    options: optionSchema,
-    scale_options: scaleOptionsSchema,
-    datetime_options: datetimeSchema,
-    word_limit: {
+    settings: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
+    order: {
       type: Number,
       default: null,
     },

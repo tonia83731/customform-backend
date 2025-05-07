@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 interface IUser extends Document {
   name: string;
   email: string;
+  is_active: boolean;
   password?: string;
   googleId?: string;
   createdAt?: Date;
@@ -24,7 +25,6 @@ const userSchema: MongooseSchema<IUser> = new Schema({
   },
   password: {
     type: String,
-    // required: true,
     minLength: 4,
   },
   googleId: {

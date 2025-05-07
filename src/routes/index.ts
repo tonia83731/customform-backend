@@ -9,7 +9,7 @@ import responseListRouter from "./modules/table";
 
 router.use("/", authRouter);
 router.use("/form", formRouter);
-router.use("/quetion", questionRouter);
+router.use("/question", questionRouter);
 router.use("/response", responseRouter);
 router.use("/table", responseListRouter);
 

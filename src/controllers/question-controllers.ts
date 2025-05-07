@@ -3,7 +3,7 @@ import Form from "../models/form-models";
 import Question from "../models/question-models";
 
 const questionControllers = {
-  getFormWithQuestion: async (
+  getQuestions: async (
     req: Request,
     res: ExpressResponse,
     next: NextFunction
@@ -27,6 +27,28 @@ const questionControllers = {
           form,
           questions,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getQuestion: async (
+    req: Request,
+    res: ExpressResponse,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { questionId } = req.params;
+      const question = await Question.findById(questionId);
+      if (!question)
+        return res.status(404).json({
+          success: false,
+          message: "Question not found",
+        });
+
+      return res.status(200).json({
+        success: true,
+        data: question,
       });
     } catch (error) {
       next(error);
@@ -87,28 +109,8 @@ const questionControllers = {
           message: "Question type does not match",
         });
 
-      switch (originalType) {
-        case "shortAnswer":
-        case "paragraph":
-          question.word_limit = null;
-          break;
-        case "singleSelect":
-        case "dropdown":
-        case "checkboxes":
-        case "singleSelectGrid":
-        case "checkboxGrid":
-          question.options = undefined;
-          break;
-        case "linearScale":
-          question.scale_options = undefined;
-          break;
-        case "date":
-        case "time":
-          question.datetime_options = undefined;
-          break;
-      }
-
       question.question_type = updateType;
+      question.settings = {};
       const updated_quest = await question.save();
 
       return res.status(200).json({
@@ -176,15 +178,7 @@ const questionControllers = {
     try {
       const { questionId } = req.params;
       const data = await Question.findById(questionId);
-      const {
-        question,
-        description,
-        is_required,
-        options,
-        scale_options,
-        datetime_options,
-        word_limit,
-      } = req.body;
+      const { question, description, is_required, settings } = req.body;
       if (!data)
         return res.status(404).json({
           success: false,
@@ -194,42 +188,98 @@ const questionControllers = {
       data.question = question || data.question;
       data.description = description || data.description;
       data.is_required = is_required || data.is_required;
+      data.settings = settings || data.settings;
 
-      switch (data.question_type) {
-        case "shortAnswer":
-        case "paragraph":
-          data.word_limit = word_limit || data.word_limit;
-          data.options = undefined;
-          data.scale_options = undefined;
-          data.datetime_options = undefined;
-          break;
-        case "singleSelect":
-        case "dropdown":
-        case "checkboxes":
-        case "singleSelectGrid":
-        case "checkboxGrid":
-          data.options = options || data.options;
-          data.word_limit = null;
-          data.scale_options = undefined;
-          data.datetime_options = undefined;
-        case "linearScale":
-          data.scale_options = scale_options || data.scale_options;
-          data.options = undefined;
-          data.datetime_options = undefined;
-          data.word_limit = null;
-        case "date":
-        case "time":
-          data.datetime_options = datetime_options || data.datetime_options;
-          data.options = undefined;
-          data.scale_options = undefined;
-          data.word_limit = null;
-      }
       await data.save();
 
       return res.status(200).json({
         success: true,
         data,
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+  assignQuestionOrder: async (
+    req: Request,
+    res: ExpressResponse,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { formId, questionId } = req.params;
+      const { sectionId, insert_order } = req.body;
+
+      const [questions, target_question] = await Promise.all([
+        Question.find({
+          form_id: formId,
+          section_id: sectionId ?? null,
+        }).sort({ order: 1 }),
+        Question.findById(questionId),
+      ]);
+
+      if (!target_question)
+        return res.status(404).json({
+          success: false,
+          message: "Question not found",
+        });
+
+      const ordered = questions.filter((q) => typeof q.order === "number");
+
+      ordered.splice(insert_order, 0, target_question);
+      const bulkOps = ordered.map((q, index) => ({
+        updateOne: {
+          filter: { _id: q._id },
+          update: { $set: { order: index } },
+        },
+      }));
+
+      await Question.bulkWrite(bulkOps);
+
+      return res
+        .status(200)
+        .json({ message: "Question inserted and order updated" });
+    } catch (error) {
+      next(error);
+    }
+  },
+  reorderQuestion: async (
+    req: Request,
+    res: ExpressResponse,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { formId, questionId } = req.params;
+      const { sectionId, newOrder } = req.body;
+
+      const [questions, target_question] = await Promise.all([
+        Question.find({ form_id: formId, section_id: sectionId }).sort({
+          order: 1,
+        }),
+        Question.findById(questionId),
+      ]);
+
+      if (!target_question)
+        return res.status(404).json({
+          success: false,
+          message: "Question not found",
+        });
+
+      const ordered = questions.filter((q) => typeof q.order === "number");
+
+      const updated = ordered.filter((q) => q._id !== questionId);
+      updated.splice(newOrder, 0, target_question);
+
+      const bulkOps = updated.map((q, index) => ({
+        updateOne: {
+          filter: { _id: q._id },
+          update: { $set: { order: index } },
+        },
+      }));
+      await Question.bulkWrite(bulkOps);
+
+      return res
+        .status(200)
+        .json({ message: "Question reordered successfully" });
     } catch (error) {
       next(error);
     }
@@ -249,11 +299,29 @@ const questionControllers = {
           message: "Question not found",
         });
       }
+      const [form, questions] = await Promise.all([
+        Form.findById(deleted_question.form_id),
+        Question.find({
+          form_id: deleted_question.form_id,
+          section_id: deleted_question.section_id,
+        }),
+      ]);
 
-      const form = await Form.findById(deleted_question.form_id);
+      // const form = await Form.findById(deleted_question.form_id);
       if (form) {
         form.question_count = (form.question_count || 0) - 1;
         await form.save();
+      }
+
+      const bulk_ops = questions.map((q, index) => ({
+        updateOne: {
+          filter: { _id: q._id },
+          update: { $set: { order: index } },
+        },
+      }));
+
+      if (bulk_ops.length > 0) {
+        await Question.bulkWrite(bulk_ops);
       }
 
       return res.status(200).json({

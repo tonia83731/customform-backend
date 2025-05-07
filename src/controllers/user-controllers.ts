@@ -10,7 +10,7 @@ const userControllers = {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, confirmed_pwd } = req.body;
 
       const hash = await bcrypt.hash(password, 10);
       const user = await User.create({
@@ -19,9 +19,12 @@ const userControllers = {
         password: hash,
       });
 
+      const userData = user.toJSON();
+      delete userData.password;
+
       return res.status(201).json({
         success: true,
-        data: user,
+        data: userData,
       });
     } catch (error) {
       next(error);
@@ -62,6 +65,17 @@ const userControllers = {
         success: true,
         token,
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+  // https://codeculturepro.medium.com/implementing-google-login-in-a-node-js-application-b6fbd98ce5e
+  googleLogin: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
     } catch (error) {
       next(error);
     }

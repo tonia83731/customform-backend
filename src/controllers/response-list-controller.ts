@@ -11,6 +11,18 @@ const responseListControllers = {
   ): Promise<any> => {
     try {
       const { formId } = req.params;
+      const [questions, responses] = await Promise.all([
+        Question.find({ form_id: formId }).sort({ order: 1 }),
+        Response.find({ form_id: formId }),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          questions,
+          responses,
+        },
+      });
     } catch (error) {
       next(error);
     }

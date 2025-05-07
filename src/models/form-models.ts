@@ -6,6 +6,7 @@ import questionModel from "./question-models";
 export interface IForm extends Document {
   title: string;
   description?: string;
+  user_id: mongoose.Types.ObjectId;
   // has_section: boolean;
   // section_count: number;
   sections: ISection[];
@@ -26,6 +27,11 @@ const formSchema: MongooseSchema<IForm> = new Schema(
     description: {
       type: String,
       maxlength: 300,
+    },
+    user_id: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     sections: [sectionSchema],
     question_count: {

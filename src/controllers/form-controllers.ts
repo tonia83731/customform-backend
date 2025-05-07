@@ -298,14 +298,3 @@ const formControllers = {
 };
 
 export default formControllers;
-// async (
-//     req: Request,
-//     res: ExpressResponse,
-//     next: NextFunction
-//   ): Promise<any> => {
-//     try {
-
-//     } catch (error) {
-//       next(error);
-//     }
-//   },

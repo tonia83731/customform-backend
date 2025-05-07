@@ -158,14 +158,3 @@ const responseControllers = {
 };
 
 export default responseControllers;
-// async (
-//     req: Request,
-//     res: ExpressResponse,
-//     next: NextFunction
-//   ): Promise<any> => {
-//     try {
-
-//     } catch (error) {
-//       next(error);
-//     }
-//   },
